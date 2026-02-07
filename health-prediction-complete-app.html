@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Prediction App - Complete Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 667px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #f5f5f5;
+            border-radius: 28px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-bar {
+            height: 20px;
+            background: #4CAF50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 10px;
+            color: #fff;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            height: calc(100% - 20px);
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Common Header Styles */
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-with-back {
+            display: flex;
+            align-items: center;
+        }
+
+        .back-btn {
+            font-size: 24px;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+
+        .header-title h1 {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+
+        .header-title p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #999;
+            font-size: 12px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .nav-item.active {
+            color: #4CAF50;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        /* LOGIN SCREEN STYLES */
+        .login-screen {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        }
+
+        .login-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 30px;
+            color: white;
+        }
+
+        .app-logo {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .login-title {
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .tagline {
+            font-size: 16px;
+            opacity: 0.9;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .login-form {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-title {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .link-text {
+            text-align: center;
+            margin-top: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .link-text a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .divider span {
+            padding: 0 10px;
+        }
+
+        .guest-btn {
+            width: 100%;
+            padding: 15px;
+            background: white;
+            color: #4CAF50;
+            border: 2px solid #4CAF50;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .version {
+            text-align: center;
+            margin-top: 20px;
+            opacity: 0.7;
+            font-size: 12px;
+        }
+
+        /* HOME SCREEN STYLES */
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .profile-icon {
+            width: 35px;
+            height: 35px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .greeting {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .user-name {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+        }
+
+        .action-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+
+        .action-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .action-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .action-button {
+            background: #f0f9f0;
+            color: #4CAF50;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            float: right;
+        }
+
+        .health-tips {
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .tips-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .tips-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .tips-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1976D2;
+        }
+
+        .tip-item {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .emergency-banner {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .emergency-icon {
+            font-size: 32px;
+            margin-right: 15px;
+        }
+
+        .emergency-text strong {
+            display: block;
+            margin-bottom: 3px;
+            font-size: 16px;
+        }
+
+        /* ASSESSMENT SCREEN STYLES */
+        .progress-bar {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .progress-track {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #f44336;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            background: #fafafa;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background: white;
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .radio-option {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #fafafa;
+        }
+
+        .radio-option input {
+            display: none;
+        }
+
+        .radio-option.selected {
+            border-color: #4CAF50;
+            background: #f0f9f0;
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .info-banner {
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #1565C0;
+            line-height: 1.5;
+        }
+
+        /* RESULTS SCREEN STYLES */
+        .result-hero {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-icon {
+            font-size: 80px;
+            margin-bottom: 15px;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .risk-level {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .risk-level.low { color: #4CAF50; }
+        .risk-level.moderate { color: #FF9800; }
+        .risk-level.high { color: #f44336; }
+
+        .risk-score {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .risk-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .metric-status {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .metric-status.normal {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .metric-status.warning {
+            background: #FFF3E0;
+            color: #FF9800;
+        }
+
+        .metric-status.danger {
+            background: #FFEBEE;
+            color: #f44336;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .recommendation-list {
+            list-style: none;
+        }
+
+        .recommendation-item {
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid #4CAF50;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        .recommendation-item.priority-high {
+            border-left-color: #f44336;
+            background: #FFEBEE;
+        }
+
+        .recommendation-item.priority-medium {
+            border-left-color: #FF9800;
+            background: #FFF3E0;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .action-btn {
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            grid-column: 1 / -1;
+        }
+
+        .action-btn.secondary {
+            background: white;
+            color: #4CAF50;
+            border: 2px solid #4CAF50;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .detail-value {
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .disclaimer {
+            background: #FFF9C4;
+            border-left: 3px solid #FBC02D;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.5;
+            margin-top: 15px;
+        }
+
+        /* HISTORY SCREEN STYLES */
+        .stats-summary {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+
+        .history-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .history-date {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .date-icon {
+            font-size: 20px;
+        }
+
+        .date-text {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .risk-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .risk-badge.low {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+
+        .risk-badge.moderate {
+            background: #FFF3E0;
+            color: #FF9800;
+        }
+
+        .history-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .mini-metric {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .metric-icon {
+            font-size: 16px;
+        }
+
+        .metric-text {
+            color: #666;
+        }
+
+        .history-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .view-details {
+            color: #4CAF50;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .time-ago {
+            color: #999;
+            font-size: 12px;
+        }
+
+        /* PROFILE SCREEN STYLES */
+        .profile-header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 30px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-name {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .profile-email {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .menu-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 15px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-icon-box {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 15px;
+        }
+
+        .menu-content {
+            flex: 1;
+        }
+
+        .menu-title {
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .menu-subtitle {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .menu-arrow {
+            color: #ccc;
+            font-size: 18px;
+        }
+
+        .toggle-switch {
+            width: 50px;
+            height: 28px;
+            background: #ccc;
+            border-radius: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #4CAF50;
+        }
+
+        .toggle-knob {
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: left 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active .toggle-knob {
+            left: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <div class="status-bar">
+                <span>9:41 AM</span>
+                <span>📶 🔋</span>
+            </div>
+
+            <!-- SCREEN 1: LOGIN -->
+            <div id="loginScreen" class="screen active login-screen">
+                <div class="login-content">
+                    <div class="app-logo">❤️</div>
+                    <h1 class="login-title">Health Prediction</h1>
+                    <p class="tagline">AI-Powered Health Risk Assessment</p>
+
+                    <div class="login-form">
+                        <h2 class="form-title">Welcome Back!</h2>
+                        
+                        <form id="loginForm" onsubmit="login(event)">
+                            <div class="input-group">
+                                <label>Username or Email</label>
+                                <input type="text" placeholder="Enter your username" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Password</label>
+                                <input type="password" placeholder="Enter your password" required>
+                            </div>
+                            <button type="submit" class="btn-login">Sign In</button>
+                            <div class="link-text">
+                                <a href="#">Forgot Password?</a>
+                            </div>
+                        </form>
+
+                        <div class="divider"><span>OR</span></div>
+
+                        <button class="guest-btn" onclick="showScreen('homeScreen')">
+                            Continue as Guest
+                        </button>
+
+                        <div class="link-text">
+                            Don't have an account? <a href="#">Sign Up</a>
+                        </div>
+                    </div>
+
+                    <div class="version">Version 1.0 | © 2024 Health Prediction</div>
+                </div>
+            </div>
+
+            <!-- SCREEN 2: HOME -->
+            <div id="homeScreen" class="screen">
+                <div class="header">
+                    <div class="header-top">
+                        <div class="menu-icon">☰</div>
+                        <div class="profile-icon">👤</div>
+                    </div>
+                    <div class="greeting">Good Morning,</div>
+                    <div class="user-name">Guest User</div>
+                </div>
+
+                <div class="content">
+                    <div class="emergency-banner">
+                        <div class="emergency-icon">🚨</div>
+                        <div class="emergency-text">
+                            <strong>Emergency Contacts</strong>
+                            <small>Quick access to emergency services</small>
+                        </div>
+                    </div>
+
+                    <div class="quick-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Assessments</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📅</div>
+                            <div class="stat-value">30</div>
+                            <div class="stat-label">Days Tracked</div>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Health Services</div>
+                    
+                    <div class="action-card" onclick="showScreen('assessmentScreen')">
+                        <div class="action-card-header">
+                            <div class="action-icon">🏥</div>
+                            <div class="action-title">New Assessment</div>
+                        </div>
+                        <div class="action-description">
+                            Start a new health risk assessment based on your current vital signs.
+                        </div>
+                        <button class="action-button">Start Now →</button>
+                        <div style="clear: both;"></div>
+                    </div>
+
+                    <div class="action-card" onclick="showScreen('historyScreen')">
+                        <div class="action-card-header">
+                            <div class="action-icon">📋</div>
+                            <div class="action-title">View History</div>
+                        </div>
+                        <div class="action-description">
+                            Review your past assessments and track progress over time.
+                        </div>
+                        <button class="action-button">View All →</button>
+                        <div style="clear: both;"></div>
+                    </div>
+
+                    <div class="health-tips">
+                        <div class="tips-header">
+                            <div class="tips-icon">💡</div>
+                            <div class="tips-title">Daily Health Tips</div>
+                        </div>
+                        <div class="tip-item">💧 Drink at least 8 glasses of water daily</div>
+                        <div class="tip-item">🚶 Walk for 30 minutes daily</div>
+                        <div class="tip-item">🥗 Include fruits and vegetables in every meal</div>
+                    </div>
+                </div>
+
+                <div class="bottom-nav">
+                    <div class="nav-item active">
+                        <div class="nav-icon">🏠</div>
+                        <div>Home</div>
+                    </div>
+                    <div class="nav-item" onclick="showScreen('assessmentScreen')">
+                        <div class="nav-icon">➕</div>
+                        <div>Assess</div>
+                    </div>
+                    <div class="nav-item" onclick="showScreen('historyScreen')">
+                        <div class="nav-icon">📊</div>
+                        <div>History</div>
+                    </div>
+                    <div class="nav-item" onclick="showScreen('profileScreen')">
+                        <div class="nav-icon">👤</div>
+                        <div>Profile</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 3: ASSESSMENT -->
+            <div id="assessmentScreen" class="screen">
+                <div class="header header-with-back">
+                    <div class="back-btn" onclick="showScreen('homeScreen')">←</div>
+                    <div class="header-title">
+                        <h1>Health Assessment</h1>
+                        <p>Complete all fields for accurate results</p>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div class="progress-bar">
+                        <div class="progress-label">
+                            <span>Progress</span>
+                            <span id="progressText">0%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+
+                    <div class="info-banner">
+                        <strong>ℹ️ Privacy Notice</strong>
+                        Your health data is encrypted and stored securely.
+                    </div>
+
+                    <form id="assessmentForm" onsubmit="submitAssessment(event)">
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">👤</div>
+                                <div class="section-title">Personal Information</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Age <span class="required">*</span></label>
+                                <input type="number" id="age" placeholder="Enter your age" min="1" max="120" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Gender <span class="required">*</span></label>
+                                <div class="radio-group">
+                                    <label class="radio-option" onclick="selectGender('male', event)">
+                                        <input type="radio" name="gender" value="male" required>
+                                        <div>👨 Male</div>
+                                    </label>
+                                    <label class="radio-option" onclick="selectGender('female', event)">
+                                        <input type="radio" name="gender" value="female">
+                                        <div>👩 Female</div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">💓</div>
+                                <div class="section-title">Vital Signs</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Blood Pressure - Systolic <span class="required">*</span></label>
+                                <input type="number" id="bp_systolic" placeholder="e.g., 120" required>
+                                <div class="input-hint">Normal: 90-120 mmHg</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Blood Pressure - Diastolic <span class="required">*</span></label>
+                                <input type="number" id="bp_diastolic" placeholder="e.g., 80" required>
+                                <div class="input-hint">Normal: 60-80 mmHg</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Blood Sugar (mg/dL) <span class="required">*</span></label>
+                                <input type="number" id="blood_sugar" placeholder="e.g., 100" required>
+                                <div class="input-hint">Fasting normal: 70-100 mg/dL</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Heart Rate (bpm) <span class="required">*</span></label>
+                                <input type="number" id="heart_rate" placeholder="e.g., 72" required>
+                                <div class="input-hint">Normal: 60-100 bpm</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>BMI</label>
+                                <input type="number" step="0.1" id="bmi" placeholder="e.g., 22.5">
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-icon">🚭</div>
+                                <div class="section-title">Lifestyle</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Do you smoke? <span class="required">*</span></label>
+                                <div class="radio-group">
+                                    <label class="radio-option" onclick="selectSmoking('no', event)">
+                                        <input type="radio" name="smoking" value="no" required>
+                                        <div>No</div>
+                                    </label>
+                                    <label class="radio-option" onclick="selectSmoking('yes', event)">
+                                        <input type="radio" name="smoking" value="yes">
+                                        <div>Yes</div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn">Analyze Health Data</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SCREEN 4: RESULTS -->
+            <div id="resultsScreen" class="screen">
+                <div class="header header-with-back">
+                    <div class="back-btn" onclick="showScreen('homeScreen')">←</div>
+                    <div class="header-title">
+                        <h1>Health Report</h1>
+                        <p id="reportDate">Generated today</p>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div class="result-hero">
+                        <div class="result-icon" id="riskIcon">✅</div>
+                        <div class="risk-level" id="riskLevel">Low Risk</div>
+                        <div class="risk-score" id="riskScore">Risk Score: 25/100</div>
+                        <div class="risk-description" id="riskDescription">
+                            Your health indicators are mostly within normal ranges.
+                        </div>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">Blood Pressure</div>
+                            <div class="metric-value" id="bpValue">120/80</div>
+                            <span class="metric-status normal" id="bpStatus">Normal</span>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Blood Sugar</div>
+                            <div class="metric-value" id="bsValue">95</div>
+                            <span class="metric-status normal" id="bsStatus">Normal</span>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Heart Rate</div>
+                            <div class="metric-value" id="hrValue">72</div>
+                            <span class="metric-status normal" id="hrStatus">Normal</span>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">BMI</div>
+                            <div class="metric-value" id="bmiValue">22.5</div>
+                            <span class="metric-status normal" id="bmiStatus">Healthy</span>
+                        </div>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-icon">💡</div>
+                            <div class="section-title">Recommendations</div>
+                        </div>
+                        <ul class="recommendation-list" id="recommendationList"></ul>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="action-btn primary" onclick="alert('Report saved!')">
+                            💾 Save Report
+                        </button>
+                        <button class="action-btn secondary" onclick="showScreen('assessmentScreen')">
+                            🔄 New Test
+                        </button>
+                        <button class="action-btn secondary" onclick="alert('Share functionality')">
+                            📤 Share
+                        </button>
+                    </div>
+
+                    <div class="disclaimer">
+                        <strong>⚕️ Medical Disclaimer:</strong> This is for informational purposes only.
+                    </div>
+                </div>
+
+                <div class="bottom-nav">
+                    <div class="nav-item" onclick="showScreen('homeScreen')">
+                        <div class="nav-icon">🏠</div>
+                        <div>Home</div>
+                    </div>
+                    <div class="nav-item" onclick="showScreen('assessmentScreen')">
+                        <div class="nav-icon">➕</div>
+                        <div>Assess</div>
+                    </div>
+                    <div class="nav-item" onclick="showScreen('historyScreen')">
+                        <div class="nav-icon">📊</div>
+                        <div>History</div>
+                    </div>
+                    <div class="nav-item" onclick="showScreen('profileScreen')">
+                        <div class="nav-icon">👤</div>
+                        <div>Profile</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 5: HISTORY -->
+            <div id="historyScreen" class="screen">
+                <div class="header header-with-back">
+                    <div class="back-btn" onclick="showScreen('homeScreen')">←</div>
+                    <div class="header-title">
+                        <h1>Assessment History</h1>
+                        <p>Track your health progress</p>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div class="stats-summary">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">12</div>
+                                <div class="stat-label">Total Tests</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">8</div>
+                                <div class="stat-label">Low Risk</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">30</div>
+                                <div class="stat-label">Days</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Recent Assessments</div>
+
+                    <div class="history-card" onclick="showScreen('resultsScreen')">
+                        <div class="history-header">
+                            <div class="history-date">
+                                <span class="date-icon">📅</span>
+                                <span class="date-text">February 6, 2026</span>
+                            </div>
+                            <span class="risk-badge low">Low Risk</span>
+                        </div>
+                        <div class="history-metrics">
+                            <div class="mini-metric">
+                                <span class="metric-icon">💉</span>
+                                <span class="metric-text">BP: <strong>120/80</strong></span>
+                            </div>
+                            <div class="mini-metric">
+                                <span class="metric-icon">🩸</span>
+                                <span class="metric-text">BS: <strong>95</strong></span>
+                            </div>
+                            <div class="mini-metric">
+                                <span class="metric-icon">💓</span>
+                                <span class="metric-text">HR: <strong>72</strong></span>
+                            </div>
+                            <div class="mini-metric">
+                                <span class="metric-icon">⚖️</span>
+                                <span class="metric-text">BMI: <strong>22.5</strong></span>
+                            </div>
+                        </div>
+                        <div class="history-footer">
+                            <span class="view-details">View Details →</span>
+                            <span class="time-ago">2 hours ago</span>
+                        </div>
+                    </div>
+
+                    <div class="history-card">
+                        <div class="history-header">
+                            <div class="history-date">
+                                <span class="date-icon">📅</span>
+                                <span class="date-text">February 3, 2026</span>
+                            </div>
+                            <span class="risk-badge low">Low Risk</span>
+                        </div>
+                        <div class="history-metrics">
+                            <div class="mini-metric">
+                                <span class="metric-icon">💉</span>
+                                <span class="metric-text">BP: <strong>118/78</strong></span>
+                            </div>
+                            <div class="mini-metric">
+                                <span class="metric-icon">🩸</span>
+                                <span class="metric-text">BS: <strong>92</strong></span>
+                            </div>
+                            <div class="mini-metric">
+                                <span class="metric-icon">💓</span>
+                                <span class="metric-text">HR: <strong>70</strong></span>
+                            </div>
+                            <div class="mini-metric">
+                                <span class="metric-icon">⚖️</span>
+                                <span class="metric-text">BMI: <strong>22.8</strong></span>
+                            </div>
+                        </div>
+                        <div class="history-footer">
+                            <span class="view-details">View Details →</span>
+                            <span class="time-ago">3 days ago</span>
+                        </div>
+                    </div>
+
+                    <div class="history-card">
+                        <div class="history-header">
+                            <div class="history-date">
+                                <span class="date-icon">📅</span>
+                                <span class="date-text">January 28, 2026</span>
+                            </div>
+                            <span class="risk-badge moderate">Moderate Risk</span>
+                        </div>
+                        <div class="history-metrics">
+                            <div class="mini-metric">
+                                <span class="metric-icon">💉</span>
+                                <span class="metric-text">BP: <strong>135/88</strong></span>
+                            </div>
+                            <div class="mini-metric">
+                                <span class="metric-icon">🩸</span>
+                                <span class="metric-text">BS: <strong>110</strong></span>
+                            </div>
+                            <div class="mini-metric">
+                                <span class="metric-icon">💓</span>
+                                <span class="metric-text">HR: <strong>85</strong></span>
+                            </div>
+                            <div class="mini-metric">
+                                <span class="metric-icon">⚖️</span>
+                                <span class="metric-text">BMI: <strong>24.2</strong></span>
+                            </div>
+                        </div>
+                        <div class="history-footer">
+                            <span class="view-details">View Details →</span>
+                            <span class="time-ago">9 days ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bottom-nav">
+                    <div class="nav-item" onclick="showScreen('homeScreen')">
+                        <div class="nav-icon">🏠</div>
+                        <div>Home</div>
+                    </div>
+                    <div class="nav-item" onclick="showScreen('assessmentScreen')">
+                        <div class="nav-icon">➕</div>
+                        <div>Assess</div>
+                    </div>
+                    <div class="nav-item active">
+                        <div class="nav-icon">📊</div>
+                        <div>History</div>
+                    </div>
+                    <div class="nav-item" onclick="showScreen('profileScreen')">
+                        <div class="nav-icon">👤</div>
+                        <div>Profile</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 6: PROFILE -->
+            <div id="profileScreen" class="screen">
+                <div class="profile-header">
+                    <div class="profile-avatar">👤</div>
+                    <div class="profile-name">Guest User</div>
+                    <div class="profile-email">guest@healthprediction.com</div>
+                </div>
+
+                <div class="content">
+                    <div class="stats-summary">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon">📊</div>
+                                <div class="stat-value">12</div>
+                                <div class="stat-label">Assessments</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">🏆</div>
+                                <div class="stat-value">30</div>
+                                <div class="stat-label">Days</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Account</div>
+                    <div class="menu-card">
+                        <div class="menu-item">
+                            <div class="menu-icon-box">👤</div>
+                            <div class="menu-content">
+                                <div class="menu-title">Personal Information</div>
+                                <div class="menu-subtitle">Update your profile</div>
+                            </div>
+                            <div class="menu-arrow">›</div>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-icon-box">🔒</div>
+                            <div class="menu-content">
+                                <div class="menu-title">Privacy & Security</div>
+                                <div class="menu-subtitle">Manage your data</div>
+                            </div>
+                            <div class="menu-arrow">›</div>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Preferences</div>
+                    <div class="menu-card">
+                        <div class="menu-item">
+                            <div class="menu-icon-box">🔔</div>
+                            <div class="menu-content">
+                                <div class="menu-title">Notifications</div>
+                                <div class="menu-subtitle">Health reminders</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-icon-box">🌙</div>
+                            <div class="menu-content">
+                                <div class="menu-title">Dark Mode</div>
+                                <div class="menu-subtitle">Reduce eye strain</div>
+                            </div>
+                            <div class="toggle-switch" onclick="toggleSwitch(this)">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-title">About</div>
+                    <div class="menu-card">
+                        <div class="menu-item">
+                            <div class="menu-icon-box">ℹ️</div>
+                            <div class="menu-content">
+                                <div class="menu-title">About Health Prediction</div>
+                                <div class="menu-subtitle">Version 1.0.0</div>
+                            </div>
+                            <div class="menu-arrow">›</div>
+                        </div>
+                        <div class="menu-item" onclick="showScreen('loginScreen')">
+                            <div class="menu-icon-box">🚪</div>
+                            <div class="menu-content">
+                                <div class="menu-title">Sign Out</div>
+                            </div>
+                            <div class="menu-arrow">›</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bottom-nav">
+                    <div class="nav-item" onclick="showScreen('homeScreen')">
+                        <div class="nav-icon">🏠</div>
+                        <div>Home</div>
+                    </div>
+                    <div class="nav-item" onclick="showScreen('assessmentScreen')">
+                        <div class="nav-icon">➕</div>
+                        <div>Assess</div>
+                    </div>
+                    <div class="nav-item" onclick="showScreen('historyScreen')">
+                        <div class="nav-icon">📊</div>
+                        <div>History</div>
+                    </div>
+                    <div class="nav-item active">
+                        <div class="nav-icon">👤</div>
+                        <div>Profile</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Screen Navigation
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+
+            // Update navigation highlights
+            updateNavigation(screenId);
+        }
+
+        function updateNavigation(screenId) {
+            const navMap = {
+                'homeScreen': 0,
+                'assessmentScreen': 1,
+                'historyScreen': 2,
+                'profileScreen': 3
+            };
+
+            document.querySelectorAll('.bottom-nav').forEach(nav => {
+                const items = nav.querySelectorAll('.nav-item');
+                items.forEach((item, index) => {
+                    item.classList.remove('active');
+                    if (index === navMap[screenId]) {
+                        item.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // Login
+        function login(event) {
+            event.preventDefault();
+            showScreen('homeScreen');
+        }
+
+        // Assessment Form
+        function selectGender(value, event) {
+            event.preventDefault();
+            const parent = event.currentTarget.parentElement;
+            parent.querySelectorAll('.radio-option').forEach(opt => opt.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            event.currentTarget.querySelector('input').checked = true;
+            updateProgress();
+        }
+
+        function selectSmoking(value, event) {
+            event.preventDefault();
+            const parent = event.currentTarget.parentElement;
+            parent.querySelectorAll('.radio-option').forEach(opt => opt.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            event.currentTarget.querySelector('input').checked = true;
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const fields = ['age', 'bp_systolic', 'bp_diastolic', 'blood_sugar', 'heart_rate'];
+            let filled = 0;
+            const total = 7; // 5 fields + gender + smoking
+
+            fields.forEach(id => {
+                if (document.getElementById(id)?.value) filled++;
+            });
+
+            if (document.querySelector('input[name="gender"]:checked')) filled++;
+            if (document.querySelector('input[name="smoking"]:checked')) filled++;
+
+            const percentage = Math.round((filled / total) * 100);
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = percentage + '%';
+        }
+
+        // Add input listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('#assessmentForm input');
+            inputs.forEach(input => {
+                input.addEventListener('input', updateProgress);
+                input.addEventListener('change', updateProgress);
+            });
+        });
+
+        function submitAssessment(event) {
+            event.preventDefault();
+
+            const data = {
+                age: parseInt(document.getElementById('age').value),
+                bp_systolic: parseInt(document.getElementById('bp_systolic').value),
+                bp_diastolic: parseInt(document.getElementById('bp_diastolic').value),
+                blood_sugar: parseInt(document.getElementById('blood_sugar').value),
+                heart_rate: parseInt(document.getElementById('heart_rate').value),
+                bmi: parseFloat(document.getElementById('bmi').value) || 22.5,
+                smoking: document.querySelector('input[name="smoking"]:checked')?.value
+            };
+
+            // Calculate risk
+            let riskScore = 0;
+            if (data.age > 60) riskScore += 30;
+            else if (data.age > 45) riskScore += 20;
+            else if (data.age > 30) riskScore += 10;
+
+            if (data.bp_systolic > 140 || data.bp_diastolic > 90) riskScore += 25;
+            else if (data.bp_systolic > 130 || data.bp_diastolic > 85) riskScore += 15;
+
+            if (data.blood_sugar > 140) riskScore += 25;
+            else if (data.blood_sugar > 100) riskScore += 15;
+
+            if (data.heart_rate > 100 || data.heart_rate < 60) riskScore += 15;
+
+            if (data.bmi > 30) riskScore += 20;
+            else if (data.bmi > 25) riskScore += 10;
+
+            if (data.smoking === 'yes') riskScore += 25;
+
+            // Display results
+            displayResults(riskScore, data);
+            showScreen('resultsScreen');
+        }
+
+        function displayResults(score, data) {
+            document.getElementById('bpValue').textContent = `${data.bp_systolic}/${data.bp_diastolic}`;
+            document.getElementById('bsValue').textContent = data.blood_sugar;
+            document.getElementById('hrValue').textContent = data.heart_rate;
+            document.getElementById('bmiValue').textContent = data.bmi.toFixed(1);
+
+            let riskLevel, riskClass, icon, description, recommendations;
+
+            if (score < 30) {
+                riskLevel = 'Low Risk';
+                riskClass = 'low';
+                icon = '✅';
+                description = 'Your health indicators are mostly within normal ranges. Continue maintaining your healthy lifestyle.';
+                recommendations = [
+                    '✅ Maintain your current healthy lifestyle',
+                    '🏃 Continue regular exercise (30+ minutes daily)',
+                    '🥗 Keep eating a balanced diet',
+                    '💧 Stay hydrated (8 glasses of water daily)',
+                    '😴 Ensure 7-9 hours of quality sleep',
+                    '📅 Schedule annual health checkups'
+                ];
+            } else if (score < 60) {
+                riskLevel = 'Moderate Risk';
+                riskClass = 'moderate';
+                icon = '⚠️';
+                description = 'Some health indicators require attention. Schedule a checkup with your healthcare provider.';
+                recommendations = [
+                    '👨‍⚕️ Schedule a checkup within 2 weeks',
+                    '🏃 Increase physical activity to 45 minutes daily',
+                    '📊 Monitor blood pressure and sugar regularly',
+                    '🧂 Reduce salt intake',
+                    '🍬 Limit sugar consumption'
+                ];
+            } else {
+                riskLevel = 'High Risk';
+                riskClass = 'high';
+                icon = '🚨';
+                description = 'Several health indicators are outside normal ranges. Please consult with a healthcare professional immediately.';
+                recommendations = [
+                    '🚨 CONSULT A DOCTOR IMMEDIATELY',
+                    '📱 Monitor vital signs daily',
+                    '💊 Follow prescribed medication strictly',
+                    '🥗 Adopt DASH or Mediterranean diet',
+                    '🏥 Consider supervised exercise program'
+                ];
+            }
+
+            document.getElementById('riskIcon').textContent = icon;
+            document.getElementById('riskLevel').textContent = riskLevel;
+            document.getElementById('riskLevel').className = `risk-level ${riskClass}`;
+            document.getElementById('riskScore').textContent = `Risk Score: ${score}/100`;
+            document.getElementById('riskDescription').textContent = description;
+
+            const recList = document.getElementById('recommendationList');
+            recList.innerHTML = recommendations.map(rec => `<li class="recommendation-item">${rec}</li>`).join('');
+        }
+
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
